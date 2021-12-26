@@ -1,0 +1,394 @@
+01.- Instalar Oracle Virtual 6.1.26
+02.- Descargar imagen bodhi-linux (*.iso)
+03.- Configurar Virtual Machine
+	- Ubuntu 64 bits
+	- Red (Adaptador puente)
+	- General-Avanzado (Bidireccional, ambos)
+04.- Iniciar bodhi-linux  e instalar.
+05.- Instalar docker.
+	- Actualizar paquetes
+	  sudo apt-get update   
+
+	- Si no se ejecuta el update => Agregar las lineas en el archivo, reiniciar y volver a ejecutar el sudo apt-get update
+	  sudo nano /etc/resolv.conf  agreagar (nameserver 8.8.8.8  nameserver 8.8.4.4)
+
+	- Desinstalar docker
+	  sudo apt-get remove docker docker-engine docker.io containerd runc
+
+	- Actualizar paquetes 
+	  sudo apt-get update
+
+	- Instalacion de paquetes
+	  sudo apt-get install \
+    		ca-certificates \
+    		curl \
+    		gnupg \
+    		lsb-release
+
+	- Instalar docker GPG key
+	  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+	- Setup repositorio estable
+	  echo \
+  	  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+	- Actualizar paquetes e instalar
+	  sudo apt-get update
+	  sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+	- Listar versiones disponibles
+	  apt-cache madison docker-ce
+
+	- Ejecutar
+	  sudo docker
+	  sudo docker run hello-world
+
+	- Mostrar imagenes 
+	  sudo docker images
+
+	- Mostrar contenedor
+	  sudo docker ps -a
+
+ 	- Eliminar contenedor
+	  sudo docker rm 383
+
+	- Eliminar images
+	  sudo docker rmi 684
+
+06.- Instalar JAVA
+	- Actualizar paquetes
+	  sudo apt-get update
+
+	- Instalar JRE
+	  sudo apt install openjdk-8-jre-headless
+	
+	- Instalar JDK
+	  sudo apt install openjdk-8-jdk-headless
+
+	- Verificar instalacion
+	  java -version
+	  javac -version
+	  sudo apt-get update
+
+07.- Instalar MAVEN 
+	- Actualizar paquetes
+	  sudo apt-get update
+
+	- Instalar Maven
+	  sudo apt install maven
+
+	- Verificar instalacion
+	  mvn -version
+	  sudo apt-get update
+
+08.- Generar una app Spring Boot
+	- Se puede poner un RestController desde el main
+
+09.- Generar un *.zip de la aplicacion
+
+10.- Subirla a S3 de AWS 
+	- Log in
+	- Crear un bucket S3, hacerlo publico
+	- Cargar archivos y carpetas
+	- Seleccionar y hacer publico
+
+	- Obtener por linea de comandos el archivo desde el repo
+	  wget https://docker-tutorial-1.s3.us-east-2.amazonaws.com/docker-aws.zip
+
+10.- Subir el archivo por WinSCP
+	- En linux instalar
+	  sudo apt-get install openssh-server openssh-client -y
+	- Instalar
+	  sudo apt install net-tools
+	- Obtener IP desde ubuntu con :
+	  ifconfig   = > 192.168.0.17
+	- Desde la maquina host (W10) hacer un ping, para validar que se ven
+	  ping 192.168.0.17
+
+11.- Descomprimir el zip
+	- Instalar el zip
+	  sudo apt install unzip
+
+	- Unzip el archivo zip
+	  unzip docker-aws.zip
+
+	- Eliminar el zip
+	  rm docker-aws.zip
+
+12.- Compilar y empaquetar
+	- con maven
+	  mvn clean install
+
+13.- Crear Dockerfile
+	- Contenido del Dockerfile :
+	  nano Dockerfile
+
+	  FROM openjdk:8-jdk-alpine
+	  EXPOSE 8080
+	  ARG JAR_FILE=target/docker-aws-0.0.1-SNAPSHOT.jar
+	  COPY ${JAR_FILE} app.jar
+	  ENTRYPOINT ["java", "-jar", "/app.jar"]
+
+14.- Crear la imagen de docker
+	- sudo docker build -t tutorial-img .
+
+15.- Correr la imagen y crear el contenedor
+	- sudo docker run -p 8080:8080 tutorial-img 
+
+16.- Eliminar todos los contenedores y todas las imagenes
+	- Contenedores
+	  sudo docker rm $(sudo docker ps -q)
+	- Imagenes
+          sudo docker rmi $(sudo docker images -q -a)
+
+17.- Eliminar el bucket creado previamente
+
+18.- Crear un tag para subir images a docker hub
+	  sudo docker tag tutorial-img:latest gresshel/tutorial-img:latest
+
+19.- Loggear a docker hub
+	  sudo docker login
+
+20.- Push a docker 
+	  sudo docker push gresshel/tutorial-img:latest
+
+21.- Seleccionar Elastic Container Service
+	- Crear Task Definition
+	- Fargate
+	- Task Role , se debe seleccionar uno.
+	- 1 GB memory, 0.5 CPU
+
+	- Agregar container
+	- image del container : docker.io/gresshel/tutorial-img:latest
+	- Memory  : hardlimit 1024
+	- Port : 8080 tcp, 80 tcp
+
+	- Create cluster
+        - Networking only
+        - Create VPC
+        
+	- View cluster
+	- Task
+	- Run new task
+	- Fargate
+	- Cluster VPC 10.0.0.0/16 , Subnet 10.0.0.0/24
+	- Editar security groups :tutorial
+	- Agregar: All Tcp, All Traffic  ->  Save
+	- Ejecutar Run task
+
+	- Al Seleccionar la Task, se accede a la IP public  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+	
+
+
+
+
+
+
+ 
+
+
+
+
